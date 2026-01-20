@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -131,6 +133,9 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     );
     await videoPlayerController.initialize();
     setState(() {});
+    videoPlayerController.addListener((){
+      setState(() {});
+    });
   }
 
   @override
@@ -150,17 +155,43 @@ class _VideoPlayerState extends State<_VideoPlayer> {
                 children: [
                   IconButton(
                     color: Colors.white,
-                    onPressed: (){},
+                    onPressed: (){
+                      final currentPosition = videoPlayerController.value.position;
+                      Duration position = Duration();
+                      if (currentPosition.inSeconds > 3) {
+                        position = currentPosition - Duration(seconds: 3);
+                      }
+                      videoPlayerController.seekTo(position);
+                    },
                     icon: Icon(Icons.rotate_left),
                   ),
                   IconButton(
                     color: Colors.white,
-                    onPressed: (){},
-                    icon: Icon(Icons.play_arrow),
+                    onPressed: (){
+                      setState(() {});
+                      if (videoPlayerController.value.isPlaying) {
+                        videoPlayerController.pause();
+                      } else {
+                        videoPlayerController.play();
+                      }
+                    },
+                    icon: Icon(
+                      videoPlayerController.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow
+                    ),
                   ),
                   IconButton(
                     color: Colors.white,
-                    onPressed: (){},
+                    onPressed: (){
+                      final maxPosition = videoPlayerController.value.duration;
+                      final currentPosition = videoPlayerController.value.position;
+                      Duration position = maxPosition;
+                      if ((maxPosition - currentPosition).inSeconds > 3) {
+                        position = currentPosition + Duration(seconds: 3);
+                      }
+                      videoPlayerController.seekTo(position);
+                    },
                     icon: Icon(Icons.rotate_right),
                   ),
                 ],
@@ -170,9 +201,32 @@ class _VideoPlayerState extends State<_VideoPlayer> {
               bottom: 0,
               left: 0,
               right: 0, // left, right: 0으로 slider를 좌우로 stretch 해줄수있음.
-              child: Slider(
-                  value: 0,
-                  onChanged: (double val){},
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  children: [
+                    Text('${videoPlayerController
+                        .value.position.inMinutes
+                        .toString().padLeft(2, '0')}:${(videoPlayerController.
+                    value.position.inSeconds % 60)
+                        .toString().padLeft(2, '0')}',
+                        style: TextStyle(color: Colors.white)),
+                    Expanded(
+                      child: Slider(
+                        value: videoPlayerController.value.position.inSeconds
+                            .toDouble(),
+                        max: videoPlayerController.value.duration.inSeconds
+                            .toDouble(),
+                        onChanged: (double val) {},
+                      ),
+                    ),
+                    Text('${videoPlayerController
+                        .value.duration.inMinutes
+                        .toString().padLeft(2, '0')}:${(videoPlayerController.
+                    value.duration.inSeconds % 60)
+                    .toString().padLeft(2, '0')}', style: TextStyle(color: Colors.white),),
+                  ],
+                ),
               ),
             ),
             Positioned(
