@@ -6,8 +6,18 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SizedBox(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xff2a3a7c),
+              Color(0xff000118),
+            ],
+            // stops: [0.2, 0.8],
+          ),
+        ),
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
