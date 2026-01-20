@@ -1,6 +1,6 @@
 # vid_player
 
-A new Flutter project.
+inflearn 에서 코드팩토리 Flutter 초급 강의 Section 23를 수강하며 실습한 내용 기록
 
 ## Getting Started
 
