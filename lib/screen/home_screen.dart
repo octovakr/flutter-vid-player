@@ -20,10 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: video != null
-        ? _VideoPlayer(video: video!,)
+        ? _VideoPlayer(
+        video: video!,
+        onAnotherVideoPicked: onLogoTap,
+      )
         : _VideoSelector(onLogoTap: onLogoTap),
     );
   }
+
 
   onLogoTap() async {
     final video = await ImagePicker().pickVideo(
@@ -108,8 +112,11 @@ class _Title extends StatelessWidget {
 
 class _VideoPlayer extends StatefulWidget {
   final XFile video;
+  final VoidCallback onAnotherVideoPicked;
+
   const _VideoPlayer({
     required this.video,
+    required this.onAnotherVideoPicked,
     super.key,
   });
 
@@ -118,13 +125,21 @@ class _VideoPlayer extends StatefulWidget {
 }
 
 class _VideoPlayerState extends State<_VideoPlayer> {
-  late final VideoPlayerController videoPlayerController;
+  late VideoPlayerController videoPlayerController;
   // null로 선언할 건 아니지만 선언 위치에서 초기화하고 싶진 않을 때 late를 사용한다.
 
   @override
   void initState() {
     super.initState();
     initializeController();
+  }
+
+  @override
+  didUpdateWidget(covariant _VideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.video.path != widget.video.path) {
+      initializeController();
+    }
   }
 
   initializeController() async { // 보통 이렇게 컨트롤러 선언과 초기화를 분리해서 사용한다.
@@ -158,7 +173,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
               position: videoPlayerController.value.position,
               maxPosition: videoPlayerController.value.duration,
             ),
-            _PickAnotherVideo(onPressed: (){}),
+            _PickAnotherVideo(onPressed: widget.onAnotherVideoPicked),
           ],
         ),
       ),
@@ -285,6 +300,7 @@ class _Bottom extends StatelessWidget {
 
 class _PickAnotherVideo extends StatelessWidget {
   final VoidCallback onPressed;
+
   const _PickAnotherVideo({
     required this.onPressed,
     super.key,
@@ -296,7 +312,7 @@ class _PickAnotherVideo extends StatelessWidget {
       right: 0,
       child: IconButton( // 다른 영상 선택하기
         color: Colors.white,
-        onPressed: (){},
+        onPressed: onPressed,
         icon: Icon(Icons.photo_camera_back),
       ),
     );
