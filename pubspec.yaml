@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   video_player: ^2.8.2
+  image_picker: ^1.0.7 # 사진이나 영상을 선택할 수 있게 해주는 플러그인
 
 dev_dependencies:
   flutter_test:

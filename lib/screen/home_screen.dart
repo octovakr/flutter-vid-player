@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,10 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  onLogoTap() {
-    setState(() {
-      showVideoPlayer = true;
-    });
+  onLogoTap() async {
+    final video = await ImagePicker().pickVideo(
+      source: ImageSource.gallery
+    );
+    print(video);
   }
 
 }
