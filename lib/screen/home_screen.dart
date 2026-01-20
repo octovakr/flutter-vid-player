@@ -126,6 +126,7 @@ class _VideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<_VideoPlayer> {
   late VideoPlayerController videoPlayerController;
+  bool showIcons = true;
   // null로 선언할 건 아니지만 선언 위치에서 초기화하고 싶진 않을 때 late를 사용한다.
 
   @override
@@ -155,27 +156,44 @@ class _VideoPlayerState extends State<_VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AspectRatio(
-        aspectRatio: videoPlayerController.value.aspectRatio,
-        child: Stack(
-          children: [ // stack에 넣은 순서대로 쌓인다.
-            VideoPlayer(
-              videoPlayerController
-            ),
-            _PlayButtons(
-              onReversePressed: onReversePressed,
-              onPlayPressed: onPlayPressed,
-              onForwardPressed: onForwardPressed,
-              isPlaying: videoPlayerController.value.isPlaying,
-            ),
-            _Bottom(
-              position: videoPlayerController.value.position,
-              maxPosition: videoPlayerController.value.duration,
-              onSliderChanged: onSliderChanged,
-            ),
-            _PickAnotherVideo(onPressed: widget.onAnotherVideoPicked),
-          ],
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          showIcons = !showIcons;
+        });
+      },
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: videoPlayerController.value.aspectRatio,
+          child: Stack(
+            children: [ // stack에 넣은 순서대로 쌓인다.
+              VideoPlayer(
+                videoPlayerController
+              ),
+              if (showIcons)
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black.withValues(alpha: 0.5),
+              ),
+              if (showIcons)
+              _PlayButtons(
+                onReversePressed: onReversePressed,
+                onPlayPressed: onPlayPressed,
+                onForwardPressed: onForwardPressed,
+                isPlaying: videoPlayerController.value.isPlaying,
+              ),
+              if (showIcons)
+              _Bottom(
+                position: videoPlayerController.value.position,
+                maxPosition: videoPlayerController.value.duration,
+                onSliderChanged: onSliderChanged,
+              ),
+              if (showIcons)
+              _PickAnotherVideo(onPressed: widget.onAnotherVideoPicked),
+
+            ],
+          ),
         ),
       ),
     );
