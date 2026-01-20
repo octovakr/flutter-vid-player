@@ -117,7 +117,7 @@ class _VideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<_VideoPlayer> {
   late final VideoPlayerController videoPlayerController;
-  // 우리가 null로 선언할 건 아니지만 선언 위치에서 초기화하고 싶진 않을 때 late 사용.
+  // null로 선언할 건 아니지만 선언 위치에서 초기화하고 싶진 않을 때 late를 사용한다.
 
   @override
   void initState() {
@@ -125,7 +125,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     initializeController();
   }
 
-  initializeController() async {
+  initializeController() async { // 보통 이렇게 컨트롤러 선언과 초기화를 분리해서 사용한다.
     videoPlayerController = VideoPlayerController.file(
       File(widget.video.path),
     );
@@ -138,8 +138,52 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     return Center(
       child: AspectRatio(
         aspectRatio: videoPlayerController.value.aspectRatio,
-        child: VideoPlayer(
-          videoPlayerController
+        child: Stack(
+          children: [ // stack에 넣은 순서대로 쌓인다.
+            VideoPlayer(
+              videoPlayerController
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: (){},
+                    icon: Icon(Icons.rotate_left),
+                  ),
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: (){},
+                    icon: Icon(Icons.play_arrow),
+                  ),
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: (){},
+                    icon: Icon(Icons.rotate_right),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0, // left, right: 0으로 slider를 좌우로 stretch 해줄수있음.
+              child: Slider(
+                  value: 0,
+                  onChanged: (double val){},
+              ),
+            ),
+            Positioned(
+              right: 0,
+              child: IconButton( // 다른 영상 선택하기
+                  color: Colors.white,
+                  onPressed: (){},
+                  icon: Icon(Icons.photo_camera_back),
+              ),
+            )
+          ],
         ),
       ),
     );
