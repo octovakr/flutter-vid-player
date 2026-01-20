@@ -148,97 +148,156 @@ class _VideoPlayerState extends State<_VideoPlayer> {
             VideoPlayer(
               videoPlayerController
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: (){
-                      final currentPosition = videoPlayerController.value.position;
-                      Duration position = Duration();
-                      if (currentPosition.inSeconds > 3) {
-                        position = currentPosition - Duration(seconds: 3);
-                      }
-                      videoPlayerController.seekTo(position);
-                    },
-                    icon: Icon(Icons.rotate_left),
-                  ),
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: (){
-                      setState(() {});
-                      if (videoPlayerController.value.isPlaying) {
-                        videoPlayerController.pause();
-                      } else {
-                        videoPlayerController.play();
-                      }
-                    },
-                    icon: Icon(
-                      videoPlayerController.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow
-                    ),
-                  ),
-                  IconButton(
-                    color: Colors.white,
-                    onPressed: (){
-                      final maxPosition = videoPlayerController.value.duration;
-                      final currentPosition = videoPlayerController.value.position;
-                      Duration position = maxPosition;
-                      if ((maxPosition - currentPosition).inSeconds > 3) {
-                        position = currentPosition + Duration(seconds: 3);
-                      }
-                      videoPlayerController.seekTo(position);
-                    },
-                    icon: Icon(Icons.rotate_right),
-                  ),
-                ],
-              ),
+            _PlayButtons(
+              onReversePressed: onReversePressed,
+              onPlayPressed: onPlayPressed,
+              onForwardPressed: onForwardPressed,
+              isPlaying: videoPlayerController.value.isPlaying,
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0, // left, right: 0으로 slider를 좌우로 stretch 해줄수있음.
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  children: [
-                    Text('${videoPlayerController
-                        .value.position.inMinutes
-                        .toString().padLeft(2, '0')}:${(videoPlayerController.
-                    value.position.inSeconds % 60)
-                        .toString().padLeft(2, '0')}',
-                        style: TextStyle(color: Colors.white)),
-                    Expanded(
-                      child: Slider(
-                        value: videoPlayerController.value.position.inSeconds
-                            .toDouble(),
-                        max: videoPlayerController.value.duration.inSeconds
-                            .toDouble(),
-                        onChanged: (double val) {},
-                      ),
-                    ),
-                    Text('${videoPlayerController
-                        .value.duration.inMinutes
-                        .toString().padLeft(2, '0')}:${(videoPlayerController.
-                    value.duration.inSeconds % 60)
-                    .toString().padLeft(2, '0')}', style: TextStyle(color: Colors.white),),
-                  ],
-                ),
-              ),
+            _Bottom(
+              position: videoPlayerController.value.position,
+              maxPosition: videoPlayerController.value.duration,
             ),
-            Positioned(
-              right: 0,
-              child: IconButton( // 다른 영상 선택하기
-                  color: Colors.white,
-                  onPressed: (){},
-                  icon: Icon(Icons.photo_camera_back),
-              ),
-            )
+            _PickAnotherVideo(onPressed: (){}),
           ],
         ),
+      ),
+    );
+  }
+  onReversePressed(){
+    final currentPosition = videoPlayerController.value.position;
+    Duration position = Duration();
+    if (currentPosition.inSeconds > 3) {
+      position = currentPosition - Duration(seconds: 3);
+    }
+    videoPlayerController.seekTo(position);
+  }
+
+  onPlayPressed(){
+    setState(() {});
+    if (videoPlayerController.value.isPlaying) {
+      videoPlayerController.pause();
+    } else {
+      videoPlayerController.play();
+    }
+  }
+
+  onForwardPressed(){
+    final maxPosition = videoPlayerController.value.duration;
+    final currentPosition = videoPlayerController.value.position;
+    Duration position = maxPosition;
+    if ((maxPosition - currentPosition).inSeconds > 3) {
+      position = currentPosition + Duration(seconds: 3);
+    }
+    videoPlayerController.seekTo(position);
+  }
+
+}
+
+class _PlayButtons extends StatelessWidget {
+  final VoidCallback onReversePressed;
+  final VoidCallback onPlayPressed;
+  final VoidCallback onForwardPressed;
+  final bool isPlaying;
+
+  const _PlayButtons({
+    required this.onReversePressed,
+    required this.onPlayPressed,
+    required this.onForwardPressed,
+    required this.isPlaying,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            color: Colors.white,
+            onPressed: onReversePressed,
+            icon: Icon(Icons.rotate_left),
+          ),
+          IconButton(
+            color: Colors.white,
+            onPressed: onPlayPressed,
+            icon: Icon(
+                isPlaying
+                ? Icons.pause
+                : Icons.play_arrow
+            ),
+          ),
+          IconButton(
+            color: Colors.white,
+            onPressed: onForwardPressed,
+            icon: Icon(Icons.rotate_right),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Bottom extends StatelessWidget {
+  final Duration position;
+  final Duration maxPosition;
+
+  const _Bottom({
+    required this.position,
+    required this.maxPosition,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0, // left, right: 0으로 slider를 좌우로 stretch 해줄수있음.
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          children: [
+            Text('${position.inMinutes
+                .toString().padLeft(2, '0')}:${(position.inSeconds % 60)
+                .toString().padLeft(2, '0')}',
+                style: TextStyle(color: Colors.white)),
+            Expanded(
+              child: Slider(
+                value: position.inSeconds
+                    .toDouble(),
+                max: maxPosition.inSeconds
+                    .toDouble(),
+                onChanged: (double val) {},
+              ),
+            ),
+            Text('${maxPosition.inMinutes
+                .toString().padLeft(2, '0')}:${(maxPosition.inSeconds % 60)
+                .toString().padLeft(2, '0')}', style: TextStyle(color: Colors.white),),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PickAnotherVideo extends StatelessWidget {
+  final VoidCallback onPressed;
+  const _PickAnotherVideo({
+    required this.onPressed,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 0,
+      child: IconButton( // 다른 영상 선택하기
+        color: Colors.white,
+        onPressed: (){},
+        icon: Icon(Icons.photo_camera_back),
       ),
     );
   }
