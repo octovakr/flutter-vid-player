@@ -172,6 +172,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
             _Bottom(
               position: videoPlayerController.value.position,
               maxPosition: videoPlayerController.value.duration,
+              onSliderChanged: onSliderChanged,
             ),
             _PickAnotherVideo(onPressed: widget.onAnotherVideoPicked),
           ],
@@ -179,6 +180,12 @@ class _VideoPlayerState extends State<_VideoPlayer> {
       ),
     );
   }
+
+  onSliderChanged(double val) {
+    final position = Duration(seconds: val.toInt());
+    videoPlayerController.seekTo(position);
+  }
+
   onReversePressed(){
     final currentPosition = videoPlayerController.value.position;
     Duration position = Duration();
@@ -206,6 +213,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     }
     videoPlayerController.seekTo(position);
   }
+
 
 }
 
@@ -258,10 +266,13 @@ class _PlayButtons extends StatelessWidget {
 class _Bottom extends StatelessWidget {
   final Duration position;
   final Duration maxPosition;
+  final ValueChanged<double> onSliderChanged;
+
 
   const _Bottom({
     required this.position,
     required this.maxPosition,
+    required this.onSliderChanged,
     super.key,
   });
 
@@ -285,7 +296,7 @@ class _Bottom extends StatelessWidget {
                     .toDouble(),
                 max: maxPosition.inSeconds
                     .toDouble(),
-                onChanged: (double val) {},
+                onChanged: onSliderChanged,
               ),
             ),
             Text('${maxPosition.inMinutes
